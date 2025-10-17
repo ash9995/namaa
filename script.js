@@ -2,8 +2,10 @@
 // 1. إعدادات أولية ومتغيرات عامة
 // ===================================================================
 
-// متغير لحفظ بيانات جميع الاستبيانات في ذاكرة المتصفح.
-// ملاحظة: هذه البيانات مؤقتة وتفقد عند تحديث الصفحة.
+// عنوان API الخاص بالخادم
+const API_URL = 'http://localhost:3000/api';
+
+// متغير لحفظ بيانات جميع الاستبيانات (يتم تحميلها من قاعدة البيانات)
 window.surveysData = [];
 
 // متغير لتتبع حالة تسجيل دخول المستخدم (الموظف)
@@ -24,7 +26,7 @@ function showLanding() {
     document.getElementById('dashboardPage').classList.add('hidden');
     document.getElementById('loginPage').classList.add('hidden');
     document.getElementById('landingPage').classList.remove('hidden');
-    window.scrollTo(0, 0); // الانتقال لأعلى الصفحة
+    window.scrollTo(0, 0);
 }
 
 // دالة لإظهار صفحة الاستبيان وإخفاء البقية
@@ -46,7 +48,7 @@ function showLogin() {
 }
 
 // دالة لإظهار لوحة التحكم (بعد التحقق من تسجيل الدخول)
-function showDashboard() {
+async function showDashboard() {
     // إذا لم يكن المستخدم مسجلاً دخوله، يتم توجيهه لصفحة الدخول
     if (!isLoggedIn) {
         showLogin();
@@ -56,38 +58,88 @@ function showDashboard() {
     document.getElementById('surveyPage').classList.add('hidden');
     document.getElementById('loginPage').classList.add('hidden');
     document.getElementById('dashboardPage').classList.remove('hidden');
-    updateDashboard(); // تحديث بيانات لوحة التحكم
+    
+    // تحميل البيانات من قاعدة البيانات
+    await loadSurveysFromDatabase();
+    updateDashboard();
     window.scrollTo(0, 0);
 }
 
 // دالة تسجيل الخروج
 function logout() {
     isLoggedIn = false;
-    showLanding(); // العودة للصفحة الرئيسية
+    showLanding();
 }
 
 
 // ===================================================================
-// 3. دوال معالجة النماذج (Form Handlers)
+// 3. دوال الاتصال بقاعدة البيانات (Database API Functions)
+// ===================================================================
+
+// دالة لتحميل جميع الاستبيانات من قاعدة البيانات
+async function loadSurveysFromDatabase() {
+    try {
+        const response = await fetch(`${API_URL}/surveys`);
+        if (response.ok) {
+            window.surveysData = await response.json();
+            console.log('✅ تم تحميل البيانات من قاعدة البيانات:', window.surveysData.length);
+        } else {
+            console.error('خطأ في تحميل البيانات');
+        }
+    } catch (error) {
+        console.error('خطأ في الاتصال بالخادم:', error);
+        alert('تعذر الاتصال بالخادم. تأكد من تشغيل الخادم أولاً.');
+    }
+}
+
+// دالة لحفظ استبيان جديد في قاعدة البيانات
+async function saveSurveyToDatabase(surveyData) {
+    try {
+        const response = await fetch(`${API_URL}/surveys`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(surveyData)
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            console.log('✅ تم حفظ الاستبيان في قاعدة البيانات');
+            return result;
+        } else {
+            console.error('خطأ في حفظ البيانات');
+            return null;
+        }
+    } catch (error) {
+        console.error('خطأ في الاتصال بالخادم:', error);
+        alert('تعذر حفظ البيانات. تأكد من تشغيل الخادم.');
+        return null;
+    }
+}
+
+
+// ===================================================================
+// 4. دوال معالجة النماذج (Form Handlers)
 // ===================================================================
 
 // دالة لمعالجة عملية تسجيل الدخول
 function handleLogin(event) {
-    event.preventDefault(); // منع السلوك الافتراضي للنموذج (تحديث الصفحة)
+    event.preventDefault();
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
 
     // التحقق من صحة اسم المستخدم وكلمة المرور
     if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
         isLoggedIn = true;
-        showDashboard(); // عرض لوحة التحكم عند النجاح
+        showDashboard();
     } else {
         alert('اسم المستخدم أو كلمة المرور غير صحيحة');
     }
 }
 
 // دالة لمعالجة إرسال نموذج الاستبيان
-function handleSubmit(event) {
+async function handleSubmit(event) {
     event.preventDefault();
     
     // جمع بيانات النموذج في كائن (object) واحد
@@ -99,33 +151,35 @@ function handleSubmit(event) {
         educationLevel: document.getElementById('educationLevel').value,
         employmentStatus: document.getElementById('employmentStatus').value,
         familySize: document.getElementById('familySize').value,
-        timestamp: new Date().toISOString(), // إضافة التاريخ والوقت الحالي
-        // استدعاء دالة لتحديد البرامج الموصى بها بناءً على الإجابات
+        timestamp: new Date().toISOString(),
         programs: getRecommendedPrograms(
             document.getElementById('ageGroup').value, 
             document.getElementById('incomeLevel').value
         )
     };
 
-    // إضافة بيانات الاستبيان الجديد إلى مصفوفة البيانات العامة
-    window.surveysData.push(formData);
-    console.log('Survey Data Submitted:', formData);
-
-    // إظهار نافذة تأكيد الإرسال
-    const modal = document.getElementById('successModal');
-    modal.classList.add('show');
+    // حفظ البيانات في قاعدة البيانات
+    const result = await saveSurveyToDatabase(formData);
     
-    // إخفاء النافذة بعد 3 ثوانٍ والعودة للصفحة الرئيسية
-    setTimeout(() => {
-        modal.classList.remove('show');
-        document.getElementById('surveyForm').reset(); // إعادة تعيين حقول النموذج
-        showLanding();
-    }, 3000);
+    if (result) {
+        console.log('Survey Data Submitted:', formData);
+
+        // إظهار نافذة تأكيد الإرسال
+        const modal = document.getElementById('successModal');
+        modal.classList.add('show');
+        
+        // إخفاء النافذة بعد 3 ثوانٍ والعودة للصفحة الرئيسية
+        setTimeout(() => {
+            modal.classList.remove('show');
+            document.getElementById('surveyForm').reset();
+            showLanding();
+        }, 3000);
+    }
 }
 
 
 // ===================================================================
-// 4. منطق النظام (Business Logic)
+// 5. منطق النظام (Business Logic)
 // ===================================================================
 
 // دالة لتحديد البرامج الموصى بها بناءً على معايير محددة
@@ -153,12 +207,12 @@ function getRecommendedPrograms(age, income) {
         programs.push('التطوير المهني');
     }
     
-    return programs; // إرجاع مصفوفة البرامج الموصى بها
+    return programs;
 }
 
 
 // ===================================================================
-// 5. دوال تحديث لوحة التحكم (Dashboard Update Functions)
+// 6. دوال تحديث لوحة التحكم (Dashboard Update Functions)
 // ===================================================================
 
 // دالة رئيسية لتحديث جميع مكونات لوحة التحكم
@@ -174,10 +228,8 @@ function updateKPIs() {
     document.getElementById('totalSurveys').textContent = total;
     
     if (total > 0) {
-        // حساب إجمالي عدد البرامج الموصى بها
         const totalProgramsCount = window.surveysData.reduce((sum, survey) => 
             sum + (survey.programs ? survey.programs.length : 0), 0);
-        // حساب متوسط البرامج لكل فرد
         const avg = (totalProgramsCount / total).toFixed(1);
         document.getElementById('avgPrograms').textContent = avg;
     } else {
@@ -196,9 +248,8 @@ function updateCharts() {
 // دالة لتحديث الرسم البياني الخاص بالبرامج
 function updateProgramsChart() {
     const ctx = document.getElementById('programsChart').getContext('2d');
-    const programCounts = {}; // كائن لحفظ عدد مرات التوصية بكل برنامج
+    const programCounts = {};
     
-    // حساب التكرارات
     window.surveysData.forEach(survey => {
         if (survey.programs) {
             survey.programs.forEach(program => {
@@ -207,14 +258,12 @@ function updateProgramsChart() {
         }
     });
 
-    // حذف الرسم البياني القديم قبل إنشاء واحد جديد (لتجنب التراكم)
     if (window.programsChartInstance) {
         window.programsChartInstance.destroy();
     }
 
-    // إنشاء رسم بياني جديد باستخدام Chart.js
     window.programsChartInstance = new Chart(ctx, {
-        type: 'bar', // نوع الرسم: أعمدة
+        type: 'bar',
         data: {
             labels: Object.keys(programCounts),
             datasets: [{
@@ -247,7 +296,7 @@ function updateDemographicChart() {
     }
 
     window.demographicChartInstance = new Chart(ctx, {
-        type: 'pie', // نوع الرسم: دائري
+        type: 'pie',
         data: {
             labels: Object.keys(ageCounts),
             datasets: [{
@@ -325,18 +374,15 @@ function updateEducationChart() {
     });
 }
 
-
 // دالة لتحديث جدول أحدث الاستبيانات
 function updateTable() {
     const tbody = document.getElementById('surveysTableBody');
     
-    // إذا لم تكن هناك بيانات، يتم عرض رسالة
     if (window.surveysData.length === 0) {
         tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: #999;">لا توجد استبيانات بعد</td></tr>';
         return;
     }
 
-    // عرض آخر 10 استبيانات فقط (مع عكس الترتيب لإظهار الأحدث أولاً)
     tbody.innerHTML = window.surveysData.slice(-10).reverse().map(survey => `
         <tr>
             <td>${new Date(survey.timestamp).toLocaleDateString('ar-SA')}</td>
@@ -352,7 +398,7 @@ function updateTable() {
 
 
 // ===================================================================
-// 6. دوال إضافية (Utility Functions)
+// 7. دوال إضافية (Utility Functions)
 // ===================================================================
 
 // دالة لتصدير البيانات إلى ملف CSV (متوافق مع Excel)
@@ -362,15 +408,12 @@ function exportToExcel() {
         return;
     }
 
-    // إنشاء رأس الجدول
     let csv = 'الاسم,الفئة العمرية,الجنس,مستوى الدخل,المستوى التعليمي,الحالة الوظيفية,عدد أفراد الأسرة,البرامج الموصى بها,التاريخ\n';
     
-    // إضافة صف لكل استبيان
     window.surveysData.forEach(survey => {
         csv += `${survey.fullName},${survey.ageGroup},${survey.gender},${survey.incomeLevel},${survey.educationLevel},${survey.employmentStatus},${survey.familySize},"${survey.programs.join(', ')}",${new Date(survey.timestamp).toLocaleDateString('ar-SA')}\n`;
     });
 
-    // إنشاء ملف وتنزيله
     const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
@@ -381,3 +424,4 @@ function exportToExcel() {
 // رسائل تظهر في console المتصفح للمطورين
 console.log('Social Development Survey System Loaded');
 console.log('Default Login - Username: admin, Password: admin123');
+console.log('Backend API URL:', API_URL);
