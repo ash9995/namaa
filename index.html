@@ -1,625 +1,46 @@
 <!DOCTYPE html>
+<!-- 
+    صفحة مركز التنمية الاجتماعية الرئيسية
+    النسخة: 1.0
+    التاريخ: أكتوبر 2025
+    الوصف: الصفحة الرئيسية لنظام تقييم احتياجات المجتمع والتحليلات
+-->
 <html lang="ar" dir="rtl">
 <head>
+    <!-- 
+        معلومات الصفحة الأساسية
+        - ضبط ترميز UTF-8 للدعم الكامل للغة العربية
+        - ضبط العرض المتجاوب للأجهزة المختلفة
+        - استخدام خط Tajawal للنصوص العربية
+    -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مركز التنمية الاجتماعية</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Tajawal', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #f5f5f5;
-            direction: rtl;
-        }
-
-        .hero-section {
-            background: linear-gradient(135deg, #f9b44e 0%, #f5a623 100%);
-            padding: 80px 20px;
-            text-align: center;
-            color: #2c3e50;
-        }
-
-        .hero-title {
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-        }
-
-        .hero-subtitle {
-            font-size: 1.3rem;
-            margin-bottom: 40px;
-            line-height: 1.8;
-            max-width: 900px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 15px 40px;
-            font-size: 1.1rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            font-family: 'Tajawal', sans-serif;
-        }
-
-        .btn-primary {
-            background-color: rgba(255, 255, 255, 0.3);
-            color: #2c3e50;
-            border: 2px solid rgba(255, 255, 255, 0.5);
-        }
-
-        .btn-primary:hover {
-            background-color: rgba(255, 255, 255, 0.5);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn-secondary {
-            background-color: white;
-            color: #2c3e50;
-        }
-
-        .btn-secondary:hover {
-            background-color: #f0f0f0;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn-cta {
-            background-color: white;
-            color: #3cb579;
-            padding: 15px 50px;
-            font-size: 1.2rem;
-        }
-
-        .btn-cta:hover {
-            background-color: #f0f0f0;
-            transform: scale(1.05);
-        }
-
-        .btn-submit {
-            background-color: #f5a623;
-            color: white;
-            width: 100%;
-            padding: 18px;
-            font-size: 1.2rem;
-            margin-top: 30px;
-        }
-
-        .btn-submit:hover {
-            background-color: #e89610;
-        }
-
-        .btn-logout {
-            background-color: #e74c3c;
-            color: white;
-            padding: 10px 25px;
-            font-size: 0.95rem;
-        }
-
-        .btn-logout:hover {
-            background-color: #c0392b;
-        }
-
-        .btn-export {
-            background-color: #3cb579;
-            color: white;
-            padding: 10px 25px;
-            font-size: 0.95rem;
-        }
-
-        .btn-export:hover {
-            background-color: #2ea367;
-        }
-
-        .how-it-works {
-            padding: 80px 20px;
-            background-color: #f8f9fa;
-        }
-
-        .section-title {
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            color: #2c3e50;
-        }
-
-        .section-subtitle {
-            text-align: center;
-            font-size: 1.2rem;
-            color: #666;
-            margin-bottom: 60px;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .feature-card {
-            background: white;
-            padding: 40px 30px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
-        }
-
-        .feature-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #ffe8cc 0%, #ffd699 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 25px;
-            font-size: 2rem;
-        }
-
-        .feature-title {
-            font-size: 1.4rem;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: #2c3e50;
-        }
-
-        .feature-description {
-            color: #666;
-            line-height: 1.8;
-            font-size: 0.95rem;
-        }
-
-        .cta-section {
-            background: linear-gradient(135deg, #3cb579 0%, #2ea367 100%);
-            padding: 60px 20px;
-            text-align: center;
-            color: white;
-            margin: 80px 0 0 0;
-        }
-
-        .cta-title {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-        }
-
-        .cta-description {
-            font-size: 1.2rem;
-            margin-bottom: 30px;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .survey-section {
-            max-width: 700px;
-            margin: 80px auto;
-            padding: 20px;
-        }
-
-        .back-link {
-            color: #3cb579;
-            text-decoration: none;
-            font-size: 1rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            margin-bottom: 30px;
-            transition: color 0.3s ease;
-        }
-
-        .back-link:hover {
-            color: #2ea367;
-        }
-
-        .form-container {
-            background: white;
-            padding: 50px;
-            border-radius: 12px;
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .form-title {
-            text-align: center;
-            font-size: 2rem;
-            margin-bottom: 15px;
-            color: #2c3e50;
-        }
-
-        .form-subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 40px;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
-        .form-input,
-        .form-select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-            font-family: 'Tajawal', sans-serif;
-            background-color: white;
-        }
-
-        .form-input:focus,
-        .form-select:focus {
-            outline: none;
-            border-color: #3cb579;
-        }
-        
-        .form-select {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23666' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: left 15px center;
-            padding-left: 40px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .info-box {
-            background-color: #e8f5f1;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 30px 0;
-            color: #2c3e50;
-            line-height: 1.8;
-        }
-
-        .footer {
-            background-color: #2c3e50;
-            color: white;
-            text-align: center;
-            padding: 30px 20px;
-        }
-
-        .footer-text {
-            margin-bottom: 10px;
-        }
-
-        .footer-link {
-            color: #f5a623;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .footer-link:hover {
-            color: #e89610;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Dashboard Styles */
-        .dashboard-header {
-            background: white;
-            padding: 20px 40px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .dashboard-title {
-            font-size: 1.8rem;
-            color: #2c3e50;
-        }
-
-        .dashboard-content {
-            max-width: 1400px;
-            margin: 40px auto;
-            padding: 0 40px;
-        }
-
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
-        }
-
-        .kpi-card {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .kpi-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-        }
-
-        .kpi-icon.yellow {
-            background: linear-gradient(135deg, #ffe8cc 0%, #ffd699 100%);
-        }
-
-        .kpi-icon.green {
-            background: linear-gradient(135deg, #d4f4dd 0%, #b8e6c9 100%);
-        }
-
-        .kpi-icon.blue {
-            background: linear-gradient(135deg, #dae8fc 0%, #b3d4fc 100%);
-        }
-
-        .kpi-content {
-            flex: 1;
-            text-align: right;
-        }
-
-        .kpi-label {
-            font-size: 0.95rem;
-            color: #666;
-            margin-bottom: 8px;
-        }
-
-        .kpi-value {
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: #2c3e50;
-        }
-
-        .charts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-            gap: 30px;
-            margin-bottom: 40px;
-        }
-
-        .chart-card {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .chart-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: #2c3e50;
-        }
-
-        .chart-subtitle {
-            font-size: 0.9rem;
-            color: #666;
-            margin-bottom: 25px;
-        }
-
-        .table-card {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 40px;
-        }
-
-        .survey-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        .survey-table th,
-        .survey-table td {
-            padding: 15px;
-            text-align: right;
-            border-bottom: 1px solid #eee;
-        }
-
-        .survey-table th {
-            background-color: #f8f9fa;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
-        .survey-table tr:hover {
-            background-color: #f8f9fa;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-
-        .badge-yellow {
-            background-color: #fff4e6;
-            color: #f5a623;
-        }
-
-        .badge-orange {
-            background-color: #ffe8cc;
-            color: #e67e22;
-        }
-
-        .badge-green {
-            background-color: #e8f5f1;
-            color: #3cb579;
-        }
-
-        /* Login Page Styles */
-        .login-container {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
-            padding: 20px;
-        }
-
-        .login-card {
-            background: white;
-            padding: 50px;
-            border-radius: 12px;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.1);
-            max-width: 450px;
-            width: 100%;
-        }
-
-        .login-title {
-            font-size: 2rem;
-            text-align: center;
-            margin-bottom: 10px;
-            color: #2c3e50;
-        }
-
-        .login-subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 40px;
-        }
-
-        /* Success Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal.show {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 50px;
-            border-radius: 12px;
-            text-align: center;
-            max-width: 500px;
-            margin: 20px;
-        }
-
-        .modal-title {
-            font-size: 2rem;
-            color: #2c3e50;
-            margin-bottom: 15px;
-        }
-
-        .modal-message {
-            font-size: 1.1rem;
-            color: #666;
-            line-height: 1.8;
-        }
-
-        @media (max-width: 768px) {
-            .hero-title {
-                font-size: 2rem;
-            }
-
-            .hero-subtitle {
-                font-size: 1rem;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .form-container, .login-card {
-                padding: 30px 20px;
-            }
-
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .section-title {
-                font-size: 2rem;
-            }
-
-            .cta-title {
-                font-size: 1.8rem;
-            }
-
-            .charts-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .dashboard-header {
-                flex-direction: column;
-                gap: 15px;
-            }
-        }
-    </style>
+    
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Landing Page -->
+
+    <!-- 
+        القسم الرئيسي للصفحة
+        يحتوي على:
+        - صفحة الترحيب الرئيسية
+        - قسم كيفية عمل النظام
+        - قسم الدعوة للمشاركة
+        - تذييل الصفحة
+    -->
     <div id="landingPage">
+        <!-- 
+            قسم الترحيب الرئيسي
+            يعرض:
+            - عنوان المركز
+            - وصف مختصر للخدمة
+            - زر للانتقال إلى الاستبيان
+        -->
         <section class="hero-section">
             <div class="container">
                 <h1 class="hero-title">مركز التنمية الاجتماعية</h1>
@@ -650,7 +71,6 @@
                             جمع البيانات الدقيقة من خلال استبيانات إلكترونية سهلة الاستخدام
                         </p>
                     </div>
-
                     <div class="feature-card">
                         <div class="feature-icon">📊</div>
                         <h3 class="feature-title">تحليل البيانات</h3>
@@ -658,7 +78,6 @@
                             تحليل الاتجاهات وتحديد المجالات ذات الأولوية لتطوير البرامج
                         </p>
                     </div>
-
                     <div class="feature-card">
                         <div class="feature-icon">👥</div>
                         <h3 class="feature-title">تحليل الفئات المستفيدة</h3>
@@ -666,7 +85,6 @@
                             تحليل احتياجات المستفيدين حسب الفئات العمرية والاجتماعية
                         </p>
                     </div>
-
                     <div class="feature-card">
                         <div class="feature-icon">🎯</div>
                         <h3 class="feature-title">تخطيط البرامج</h3>
@@ -697,8 +115,23 @@
         </footer>
     </div>
 
-    <!-- Survey Form Page -->
+    <!-- 
+        صفحة الاستبيان
+        الوظائف:
+        - جمع البيانات الديموغرافية للمستفيدين
+        - تحديد احتياجات المجتمع
+        - تقييم الأولويات للبرامج المختلفة
+        class="hidden": يتم إخفاء القسم افتراضياً حتى يتم النقر على زر "املأ الاستبيان"
+    -->
     <div id="surveyPage" class="hidden">
+        <!-- 
+            قسم نموذج الاستبيان
+            المكونات:
+            - نموذج إدخال البيانات الشخصية
+            - اختيارات الفئات العمرية والجنس
+            - معلومات الدخل والتعليم
+            - الحالة الوظيفية وحجم الأسرة
+        -->
         <div class="survey-section">
             <a href="#" class="back-link" onclick="showLanding(); return false;">
                 ← العودة للرئيسية
@@ -713,7 +146,6 @@
                         <label class="form-label" for="fullName">الاسم الكامل</label>
                         <input type="text" id="fullName" class="form-input" placeholder="أدخل اسمك الكامل" required>
                     </div>
-
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label" for="ageGroup">الفئة العمرية</label>
@@ -729,7 +161,6 @@
                                 <option value="66+">66+ سنة</option>
                             </select>
                         </div>
-
                         <div class="form-group">
                             <label class="form-label" for="gender">الجنس</label>
                             <select id="gender" class="form-select" required>
@@ -739,7 +170,6 @@
                             </select>
                         </div>
                     </div>
-
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label" for="incomeLevel">مستوى الدخل</label>
@@ -752,7 +182,6 @@
                                 <option value="high">أكثر من 20,000 ريال</option>
                             </select>
                         </div>
-
                         <div class="form-group">
                             <label class="form-label" for="educationLevel">المستوى التعليمي</label>
                             <select id="educationLevel" class="form-select" required>
@@ -768,7 +197,6 @@
                             </select>
                         </div>
                     </div>
-
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label" for="employmentStatus">الحالة الوظيفية</label>
@@ -783,70 +211,102 @@
                                 <option value="housewife">ربة منزل</option>
                             </select>
                         </div>
-
                         <div class="form-group">
                             <label class="form-label" for="familySize">عدد أفراد الأسرة</label>
                             <input type="number" id="familySize" class="form-input" placeholder="أدخل عدد أفراد الأسرة" min="1" max="20" required>
                         </div>
                     </div>
-
                     <div class="info-box">
                         سيقوم النظام بتحليل بياناتك ويوجهك تلقائياً إلى البرامج الأنسب لك بناءً على المعلومات المقدمة. هدفنا
                         تقديم أفضل خدمة تناسب احتياجاتك الفعلية.
                     </div>
-
                     <button type="submit" class="btn btn-submit">إرسال الاستبيان</button>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- Login Page -->
+    <!-- 
+        صفحة تسجيل الدخول
+        الغرض:
+        - تأمين الوصول إلى لوحة التحليلات
+        - التحقق من هوية الموظفين المصرح لهم
+        - توفير واجهة آمنة للوصول إلى البيانات التحليلية
+        class="hidden": القسم مخفي حتى يتم النقر على رابط تسجيل دخول الموظفين
+    -->
     <div id="loginPage" class="hidden">
+        <!-- 
+            نموذج تسجيل الدخول للموظفين
+            المكونات:
+            - حقل إدخال اسم المستخدم
+            - حقل إدخال كلمة المرور
+            - زر تسجيل الدخول
+            - معالجة الأحداث عبر handleLogin()
+        -->
         <div class="login-container">
             <div class="login-card">
                 <h2 class="login-title">تسجيل الدخول</h2>
                 <p class="login-subtitle">الوصول إلى لوحة التحليلات</p>
-
                 <form id="loginForm" onsubmit="handleLogin(event)">
                     <div class="form-group">
                         <label class="form-label" for="username">اسم المستخدم</label>
                         <input type="text" id="username" class="form-input" required>
                     </div>
-
                     <div class="form-group">
                         <label class="form-label" for="password">كلمة المرور</label>
                         <input type="password" id="password" class="form-input" required>
                     </div>
-
                     <button type="submit" class="btn btn-submit">دخول</button>
                 </form>
             </div>
         </div>
     </div>
     
-    <!-- Dashboard Page -->
+    <!-- 
+        صفحة لوحة التحليلات
+        الوظائف الرئيسية:
+        - عرض إحصائيات وتحليلات الاستبيانات
+        - تقديم رؤى عن احتياجات المجتمع
+        - تصدير البيانات للتحليل المتقدم
+        - عرض المؤشرات الرئيسية والرسوم البيانية
+        تتطلب تسجيل الدخول للوصول
+    -->
     <div id="dashboardPage" class="hidden">
-        <div class="dashboard-header">
+        <!-- 
+            رأس لوحة التحليلات
+            المكونات:
+            - عنوان اللوحة
+            - أزرار التحكم (تصدير، العودة للرئيسية، تسجيل الخروج)
+            - شريط التنقل
+        -->
+        <header class="dashboard-header">
             <h1 class="dashboard-title">لوحة التحليلات</h1>
             <div class="button-group">
-                <button class="btn btn-export" onclick="exportToExcel()">
-                    📥 تصدير Excel
-                </button>
-                <button class="btn btn-secondary" onclick="showLanding()">
-                    الرئيسية
-                </button>
-                <button class="btn btn-logout" onclick="logout()">
-                    تسجيل الخروج
-                </button>
+                <button class="btn btn-export" onclick="exportToExcel()">📥 تصدير Excel</button>
+                <button class="btn btn-secondary" onclick="showLanding()">الرئيسية</button>
+                <button class="btn btn-logout" onclick="logout()">تسجيل الخروج</button>
             </div>
-        </div>
+        </header>
 
-        <div class="dashboard-content">
+        <main class="dashboard-content">
             <h2 class="section-title">تحليلات البيانات</h2>
             <p class="section-subtitle">تحليل شامل لبيانات المستفيدين ونتائج التوصيات البرامجية</p>
 
+            <!-- 
+                شبكة مؤشرات الأداء الرئيسية (KPIs)
+                تعرض:
+                - إجمالي عدد الاستبيانات المقدمة
+                - عدد البرامج الموصى بها
+                - متوسط عدد البرامج لكل مستفيد
+                تحديث تلقائي عند تحميل البيانات
+            -->
             <div class="kpi-grid">
+                <!-- 
+                    بطاقة إحصائية - إجمالي الاستبيانات
+                    - عرض العدد الكلي للاستبيانات
+                    - تحديث مباشر من قاعدة البيانات
+                    - تصميم بصري مع أيقونة توضيحية
+                -->
                 <div class="kpi-card">
                     <div class="kpi-icon yellow">👥</div>
                     <div class="kpi-content">
@@ -854,7 +314,6 @@
                         <div class="kpi-value" id="totalSurveys">0</div>
                     </div>
                 </div>
-
                 <div class="kpi-card">
                     <div class="kpi-icon green">📋</div>
                     <div class="kpi-content">
@@ -862,7 +321,6 @@
                         <div class="kpi-value" id="totalPrograms">3</div>
                     </div>
                 </div>
-
                 <div class="kpi-card">
                     <div class="kpi-icon blue">📈</div>
                     <div class="kpi-content">
@@ -872,25 +330,38 @@
                 </div>
             </div>
 
+            <!-- 
+                شبكة الرسوم البيانية
+                المحتويات:
+                - رسوم بيانية تفاعلية باستخدام Chart.js
+                - تحليلات مرئية للبيانات
+                - تحديث تلقائي عند تغير البيانات
+                - قابلية التفاعل والتكبير
+            -->
             <div class="charts-grid">
+                <!-- 
+                    رسم بياني - اهتمامات البرامج
+                    الوظائف:
+                    - عرض توزيع اهتمامات المستفيدين
+                    - تحليل الطلب على البرامج المختلفة
+                    - إمكانية التصفية والترتيب
+                    - تحديث مباشر مع البيانات الجديدة
+                -->
                 <div class="chart-card">
                     <h3 class="chart-title">اهتمامات البرامج</h3>
                     <p class="chart-subtitle">أكثر البرامج الموصى بها للمستفيدين</p>
                     <canvas id="programsChart"></canvas>
                 </div>
-
                 <div class="chart-card">
                     <h3 class="chart-title">التوزيع الديموغرافي</h3>
                     <p class="chart-subtitle">توزيع الفئات العمرية للمستفيدين</p>
                     <canvas id="demographicChart"></canvas>
                 </div>
-
                 <div class="chart-card">
                     <h3 class="chart-title">توزيع الدخل الشهري</h3>
                     <p class="chart-subtitle">تحليل الدخل الشهري للمستفيدين</p>
                     <canvas id="incomeChart"></canvas>
                 </div>
-
                 <div class="chart-card">
                     <h3 class="chart-title">توزيع المستوى التعليمي</h3>
                     <p class="chart-subtitle">تحليل المستوى التعليمي للمستفيدين</p>
@@ -898,7 +369,22 @@
                 </div>
             </div>
 
+            <!-- 
+                جدول الاستبيانات
+                الوظائف:
+                - عرض آخر الاستبيانات المقدمة
+                - تنظيم البيانات في صفوف وأعمدة
+                - إمكانية الفرز والتصفية
+                - تحديث تلقائي مع البيانات الجديدة
+                - عرض محدود لآخر 50 استبيان
+            -->
             <div class="table-card">
+                <!-- 
+                    عنوان الجدول والوصف
+                    - عرض عنوان واضح للجدول
+                    - وصف مختصر للمحتوى
+                    - تنسيق متناسق مع باقي العناصر
+                -->
                 <h3 class="chart-title">الاستبيانات الأخيرة</h3>
                 <p class="chart-subtitle">آخر استبيانات المجتمع المقدمة</p>
                 <table class="survey-table" id="surveysTable">
@@ -920,10 +406,17 @@
                     </tbody>
                 </table>
             </div>
-        </div>
+        </main>
     </div>
 
-    <!-- Success Modal -->
+    <!-- 
+        نافذة الشكر بعد تقديم الاستبيان
+        الوظائف:
+        - عرض رسالة شكر للمستخدم
+        - تأكيد استلام البيانات
+        - إخبار المستخدم بالخطوات التالية
+        class="modal": نافذة منبثقة تظهر بعد نجاح تقديم الاستبيان
+    -->
     <div id="successModal" class="modal">
         <div class="modal-content">
             <h2 class="modal-title">شكراً لك!</h2>
@@ -931,345 +424,9 @@
         </div>
     </div>
 
-    <script>
-        // Initialize data storage
-        window.surveysData = [];
-        let isLoggedIn = false;
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script src="script.js"></script>
 
-        // Default credentials
-        const ADMIN_USERNAME = 'admin';
-        const ADMIN_PASSWORD = 'admin123';
-
-        // Navigation Functions
-        function showLanding() {
-            document.getElementById('surveyPage').classList.add('hidden');
-            document.getElementById('dashboardPage').classList.add('hidden');
-            document.getElementById('loginPage').classList.add('hidden');
-            document.getElementById('landingPage').classList.remove('hidden');
-            window.scrollTo(0, 0);
-        }
-
-        function showSurvey() {
-            document.getElementById('landingPage').classList.add('hidden');
-            document.getElementById('dashboardPage').classList.add('hidden');
-            document.getElementById('loginPage').classList.add('hidden');
-            document.getElementById('surveyPage').classList.remove('hidden');
-            window.scrollTo(0, 0);
-        }
-
-        function showLogin() {
-            document.getElementById('landingPage').classList.add('hidden');
-            document.getElementById('surveyPage').classList.add('hidden');
-            document.getElementById('dashboardPage').classList.add('hidden');
-            document.getElementById('loginPage').classList.remove('hidden');
-            window.scrollTo(0, 0);
-        }
-
-        function showDashboard() {
-            if (!isLoggedIn) {
-                showLogin();
-                return;
-            }
-            document.getElementById('landingPage').classList.add('hidden');
-            document.getElementById('surveyPage').classList.add('hidden');
-            document.getElementById('loginPage').classList.add('hidden');
-            document.getElementById('dashboardPage').classList.remove('hidden');
-            updateDashboard();
-            window.scrollTo(0, 0);
-        }
-
-        function logout() {
-            isLoggedIn = false;
-            showLanding();
-        }
-
-        // Login Handler
-        function handleLogin(event) {
-            event.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-
-            if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-                isLoggedIn = true;
-                showDashboard();
-            } else {
-                alert('اسم المستخدم أو كلمة المرور غير صحيحة');
-            }
-        }
-
-        // Survey Form Handler
-        function handleSubmit(event) {
-            event.preventDefault();
-            
-            const formData = {
-                fullName: document.getElementById('fullName').value,
-                ageGroup: document.getElementById('ageGroup').value,
-                gender: document.getElementById('gender').value,
-                incomeLevel: document.getElementById('incomeLevel').value,
-                educationLevel: document.getElementById('educationLevel').value,
-                employmentStatus: document.getElementById('employmentStatus').value,
-                familySize: document.getElementById('familySize').value,
-                timestamp: new Date().toISOString(),
-                programs: getRecommendedPrograms(document.getElementById('ageGroup').value, 
-                                                 document.getElementById('incomeLevel').value,
-                                                 document.getElementById('educationLevel').value)
-            };
-
-            window.surveysData.push(formData);
-            console.log('Survey Data Submitted:', formData);
-
-            // Show success modal
-            const modal = document.getElementById('successModal');
-            modal.classList.add('show');
-            
-            setTimeout(() => {
-                modal.classList.remove('show');
-                document.getElementById('surveyForm').reset();
-                showLanding();
-            }, 3000);
-        }
-
-        // Get recommended programs based on criteria
-        function getRecommendedPrograms(age, income, education) {
-            const programs = [];
-            
-            // Age-based recommendations
-            if (age === '0-12' || age === '13-17') {
-                programs.push('التدريب على المهارات');
-            }
-            if (age === '18-25' || age === '26-35') {
-                programs.push('التطوير المهني');
-            }
-            if (age === '56-65' || age === '66+') {
-                programs.push('حلول الرعاية');
-            }
-            
-            // Income-based recommendations
-            if (income === 'low' || income === 'medium-low') {
-                programs.push('الثقافة المالية');
-            }
-            
-            // Default program
-            if (programs.length === 0) {
-                programs.push('التطوير المهني');
-            }
-            
-            return programs;
-        }
-
-        // Dashboard Update Functions
-        function updateDashboard() {
-            updateKPIs();
-            updateCharts();
-            updateTable();
-        }
-
-        function updateKPIs() {
-            const total = window.surveysData.length;
-            document.getElementById('totalSurveys').textContent = total;
-            
-            if (total > 0) {
-                const totalProgramsCount = window.surveysData.reduce((sum, survey) => 
-                    sum + (survey.programs ? survey.programs.length : 0), 0);
-                const avg = (totalProgramsCount / total).toFixed(1);
-                document.getElementById('avgPrograms').textContent = avg;
-            }
-        }
-
-        function updateCharts() {
-            updateProgramsChart();
-            updateDemographicChart();
-            updateIncomeChart();
-            updateEducationChart();
-        }
-
-        function updateProgramsChart() {
-            const ctx = document.getElementById('programsChart');
-            const programCounts = {};
-            
-            window.surveysData.forEach(survey => {
-                if (survey.programs) {
-                    survey.programs.forEach(program => {
-                        programCounts[program] = (programCounts[program] || 0) + 1;
-                    });
-                }
-            });
-
-            if (window.programsChartInstance) {
-                window.programsChartInstance.destroy();
-            }
-
-            window.programsChartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(programCounts),
-                    datasets: [{
-                        label: 'عدد المستفيدين',
-                        data: Object.values(programCounts),
-                        backgroundColor: '#f5a623',
-                        borderRadius: 8
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        y: { beginAtZero: true }
-                    }
-                }
-            });
-        }
-
-        function updateDemographicChart() {
-            const ctx = document.getElementById('demographicChart');
-            const ageCounts = {};
-            
-            window.surveysData.forEach(survey => {
-                ageCounts[survey.ageGroup] = (ageCounts[survey.ageGroup] || 0) + 1;
-            });
-
-            if (window.demographicChartInstance) {
-                window.demographicChartInstance.destroy();
-            }
-
-            window.demographicChartInstance = new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: Object.keys(ageCounts),
-                    datasets: [{
-                        data: Object.values(ageCounts),
-                        backgroundColor: ['#f5a623', '#e67e22', '#d68910', '#c77a0a', '#b86b05']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true
-                }
-            });
-        }
-
-        function updateIncomeChart() {
-            const ctx = document.getElementById('incomeChart');
-            const incomeCounts = {};
-            
-            window.surveysData.forEach(survey => {
-                incomeCounts[survey.incomeLevel] = (incomeCounts[survey.incomeLevel] || 0) + 1;
-            });
-
-            if (window.incomeChartInstance) {
-                window.incomeChartInstance.destroy();
-            }
-
-            window.incomeChartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(incomeCounts),
-                    datasets: [{
-                        label: 'عدد المستفيدين',
-                        data: Object.values(incomeCounts),
-                        backgroundColor: '#3cb579',
-                        borderRadius: 8
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        y: { beginAtZero: true }
-                    }
-                }
-            });
-        }
-
-        function updateEducationChart() {
-            const ctx = document.getElementById('educationChart');
-            const eduCounts = {};
-            
-            window.surveysData.forEach(survey => {
-                eduCounts[survey.educationLevel] = (eduCounts[survey.educationLevel] || 0) + 1;
-            });
-
-            if (window.educationChartInstance) {
-                window.educationChartInstance.destroy();
-            }
-
-            window.educationChartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(eduCounts),
-                    datasets: [{
-                        label: 'عدد المستفيدين',
-                        data: Object.values(eduCounts),
-                        backgroundColor: '#3498db',
-                        borderRadius: 8
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        y: { beginAtZero: true }
-                    }
-                }
-            });
-        }
-
-        function updateTable() {
-            const tbody = document.getElementById('surveysTableBody');
-            
-            if (window.surveysData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: #999;">لا توجد استبيانات بعد</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = window.surveysData.slice(-10).reverse().map(survey => `
-                <tr>
-                    <td>${new Date(survey.timestamp).toLocaleDateString('ar-SA')}</td>
-                    <td>
-                        ${survey.programs.map(p => `<span class="badge badge-yellow">${p}</span>`).join(' ')}
-                    </td>
-                    <td>${survey.gender === 'male' ? 'ذكر' : 'أنثى'}</td>
-                    <td>${survey.ageGroup}</td>
-                    <td>${survey.fullName}</td>
-                </tr>
-            `).join('');
-        }
-
-        // Export to Excel
-        function exportToExcel() {
-            if (window.surveysData.length === 0) {
-                alert('لا توجد بيانات للتصدير');
-                return;
-            }
-
-            let csv = 'الاسم,الفئة العمرية,الجنس,مستوى الدخل,المستوى التعليمي,الحالة الوظيفية,عدد أفراد الأسرة,البرامج الموصى بها,التاريخ\n';
-            
-            window.surveysData.forEach(survey => {
-                csv += `${survey.fullName},${survey.ageGroup},${survey.gender},${survey.incomeLevel},${survey.educationLevel},${survey.employmentStatus},${survey.familySize},"${survey.programs.join(', ')}",${new Date(survey.timestamp).toLocaleDateString('ar-SA')}\n`;
-            });
-
-            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `surveys_${new Date().toISOString().split('T')[0]}.csv`;
-            link.click();
-        }
-
-        // Add link to dashboard (hidden - accessible via URL)
-        window.accessDashboard = showLogin;
-
-        console.log('Social Development Survey System Loaded');
-        console.log('To access dashboard: Call accessDashboard() or visit /admin');
-        console.log('Default Login - Username: admin, Password: admin123');
-    </script>
 </body>
 </html>
