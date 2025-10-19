@@ -5,22 +5,71 @@
 // عنوان API الخاص بالخادم
 const API_URL = 'http://localhost:3000/api';
 
-// متغير لحفظ بيانات جميع الاستبيانات (يتم تحميلها من قاعدة البيانات)
+// متغير لحفظ بيانات جميع الاستبيانات
 window.surveysData = [];
 
-// متغير لتتبع حالة تسجيل دخول المستخدم (الموظف)
+// متغير لتتبع حالة تسجيل دخول المستخدم
 let isLoggedIn = false;
 
-// بيانات الدخول الافتراضية للموظف
+// بيانات الدخول الافتراضية
 const ADMIN_USERNAME = 'admin';
 const ADMIN_PASSWORD = 'admin123';
 
+// فحص حالة الخادم عند تحميل الصفحة
+window.addEventListener('DOMContentLoaded', async () => {
+    await checkServerStatus();
+});
 
 // ===================================================================
-// 2. دوال التنقل بين الصفحات (Navigation Functions)
+// 2. دالة فحص حالة الخادم
+// ===================================================================
+async function checkServerStatus() {
+    try {
+        const response = await fetch(`${API_URL}/surveys`);
+        if (response.ok) {
+            console.log('✅ الخادم يعمل بشكل صحيح');
+            return true;
+        } else {
+            console.warn('⚠️ الخادم يعمل لكن هناك مشكلة في API');
+            showServerWarning();
+            return false;
+        }
+    } catch (error) {
+        console.error('❌ الخادم لا يعمل:', error);
+        showServerWarning();
+        return false;
+    }
+}
+
+function showServerWarning() {
+    const warning = document.createElement('div');
+    warning.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #e74c3c;
+        color: white;
+        padding: 15px 30px;
+        border-radius: 8px;
+        z-index: 10000;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        font-family: Tajawal, sans-serif;
+        text-align: center;
+    `;
+    warning.innerHTML = `
+        <strong>⚠️ تحذير:</strong> الخادم لا يعمل!<br>
+        <small>قم بتشغيل الأمر: <code>npm start</code> في Terminal</small>
+    `;
+    document.body.appendChild(warning);
+    
+    setTimeout(() => warning.remove(), 8000);
+}
+
+// ===================================================================
+// 3. دوال التنقل بين الصفحات
 // ===================================================================
 
-// دالة لإظهار الصفحة الرئيسية وإخفاء البقية
 function showLanding() {
     document.getElementById('surveyPage').classList.add('hidden');
     document.getElementById('dashboardPage').classList.add('hidden');
@@ -29,7 +78,6 @@ function showLanding() {
     window.scrollTo(0, 0);
 }
 
-// دالة لإظهار صفحة الاستبيان وإخفاء البقية
 function showSurvey() {
     document.getElementById('landingPage').classList.add('hidden');
     document.getElementById('dashboardPage').classList.add('hidden');
@@ -38,7 +86,6 @@ function showSurvey() {
     window.scrollTo(0, 0);
 }
 
-// دالة لإظهار صفحة تسجيل الدخول وإخفاء البقية
 function showLogin() {
     document.getElementById('landingPage').classList.add('hidden');
     document.getElementById('surveyPage').classList.add('hidden');
@@ -47,9 +94,7 @@ function showLogin() {
     window.scrollTo(0, 0);
 }
 
-// دالة لإظهار لوحة التحكم (بعد التحقق من تسجيل الدخول)
 async function showDashboard() {
-    // إذا لم يكن المستخدم مسجلاً دخوله، يتم توجيهه لصفحة الدخول
     if (!isLoggedIn) {
         showLogin();
         return;
@@ -59,42 +104,40 @@ async function showDashboard() {
     document.getElementById('loginPage').classList.add('hidden');
     document.getElementById('dashboardPage').classList.remove('hidden');
     
-    // تحميل البيانات من قاعدة البيانات
     await loadSurveysFromDatabase();
     updateDashboard();
     window.scrollTo(0, 0);
 }
 
-// دالة تسجيل الخروج
 function logout() {
     isLoggedIn = false;
     showLanding();
 }
 
-
 // ===================================================================
-// 3. دوال الاتصال بقاعدة البيانات (Database API Functions)
+// 4. دوال الاتصال بقاعدة البيانات - محسنة
 // ===================================================================
 
-// دالة لتحميل جميع الاستبيانات من قاعدة البيانات
 async function loadSurveysFromDatabase() {
     try {
         const response = await fetch(`${API_URL}/surveys`);
         if (response.ok) {
             window.surveysData = await response.json();
-            console.log('✅ تم تحميل البيانات من قاعدة البيانات:', window.surveysData.length);
+            console.log('✅ تم تحميل البيانات:', window.surveysData.length, 'استبيان');
         } else {
-            console.error('خطأ في تحميل البيانات');
+            console.error('خطأ في تحميل البيانات - الكود:', response.status);
+            alert('حدث خطأ في تحميل البيانات من الخادم');
         }
     } catch (error) {
-        console.error('خطأ في الاتصال بالخادم:', error);
-        alert('تعذر الاتصال بالخادم. تأكد من تشغيل الخادم أولاً.');
+        console.error('❌ خطأ في الاتصال بالخادم:', error);
+        alert('تعذر الاتصال بالخادم.\n\nتأكد من:\n1. تشغيل الخادم (npm start)\n2. الخادم يعمل على المنفذ 3000');
     }
 }
 
-// دالة لحفظ استبيان جديد في قاعدة البيانات
 async function saveSurveyToDatabase(surveyData) {
     try {
+        console.log('📤 جاري إرسال البيانات إلى الخادم...');
+        
         const response = await fetch(`${API_URL}/surveys`, {
             method: 'POST',
             headers: {
@@ -105,31 +148,44 @@ async function saveSurveyToDatabase(surveyData) {
         
         if (response.ok) {
             const result = await response.json();
-            console.log('✅ تم حفظ الاستبيان في قاعدة البيانات');
+            console.log('✅ تم حفظ الاستبيان بنجاح - ID:', result.id);
             return result;
         } else {
-            console.error('خطأ في حفظ البيانات');
+            const errorText = await response.text();
+            console.error('❌ خطأ في حفظ البيانات:', response.status, errorText);
+            alert(`خطأ في حفظ البيانات (الكود: ${response.status})\n\nالمرجو التواصل مع الدعم الفني.`);
             return null;
         }
     } catch (error) {
-        console.error('خطأ في الاتصال بالخادم:', error);
-        alert('تعذر حفظ البيانات. تأكد من تشغيل الخادم.');
+        console.error('❌ خطأ في الاتصال بالخادم:', error);
+        
+        // رسالة خطأ أكثر تفصيلاً
+        let errorMessage = 'تعذر حفظ البيانات!\n\n';
+        
+        if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+            errorMessage += 'السبب: الخادم لا يعمل أو غير متصل\n\n';
+            errorMessage += 'الحل:\n';
+            errorMessage += '1. افتح Terminal في مجلد المشروع\n';
+            errorMessage += '2. شغل الأمر: npm start\n';
+            errorMessage += '3. تأكد من ظهور رسالة "الخادم يعمل الآن"';
+        } else {
+            errorMessage += 'خطأ غير متوقع: ' + error.message;
+        }
+        
+        alert(errorMessage);
         return null;
     }
 }
 
-
 // ===================================================================
-// 4. دوال معالجة النماذج (Form Handlers)
+// 5. دوال معالجة النماذج
 // ===================================================================
 
-// دالة لمعالجة عملية تسجيل الدخول
 function handleLogin(event) {
     event.preventDefault();
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
 
-    // التحقق من صحة اسم المستخدم وكلمة المرور
     if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
         isLoggedIn = true;
         showDashboard();
@@ -138,11 +194,15 @@ function handleLogin(event) {
     }
 }
 
-// دالة لمعالجة إرسال نموذج الاستبيان
 async function handleSubmit(event) {
     event.preventDefault();
     
-    // جمع بيانات النموذج في كائن (object) واحد
+    // إضافة مؤشر تحميل
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = '⏳ جاري الحفظ...';
+    
     const formData = {
         fullName: document.getElementById('fullName').value,
         ageGroup: document.getElementById('ageGroup').value,
@@ -150,7 +210,7 @@ async function handleSubmit(event) {
         incomeLevel: document.getElementById('incomeLevel').value,
         educationLevel: document.getElementById('educationLevel').value,
         employmentStatus: document.getElementById('employmentStatus').value,
-        familySize: document.getElementById('familySize').value,
+        familySize: parseInt(document.getElementById('familySize').value),
         timestamp: new Date().toISOString(),
         programs: getRecommendedPrograms(
             document.getElementById('ageGroup').value, 
@@ -158,17 +218,18 @@ async function handleSubmit(event) {
         )
     };
 
-    // حفظ البيانات في قاعدة البيانات
     const result = await saveSurveyToDatabase(formData);
     
+    // إعادة تفعيل الزر
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalText;
+    
     if (result) {
-        console.log('Survey Data Submitted:', formData);
+        console.log('✅ تم إرسال الاستبيان:', formData);
 
-        // إظهار نافذة تأكيد الإرسال
         const modal = document.getElementById('successModal');
         modal.classList.add('show');
         
-        // إخفاء النافذة بعد 3 ثوانٍ والعودة للصفحة الرئيسية
         setTimeout(() => {
             modal.classList.remove('show');
             document.getElementById('surveyForm').reset();
@@ -177,16 +238,13 @@ async function handleSubmit(event) {
     }
 }
 
-
 // ===================================================================
-// 5. منطق النظام (Business Logic)
+// 6. منطق النظام
 // ===================================================================
 
-// دالة لتحديد البرامج الموصى بها بناءً على معايير محددة
 function getRecommendedPrograms(age, income) {
     const programs = [];
     
-    // توصيات بناءً على العمر
     if (age === '0-12' || age === '13-17') {
         programs.push('التدريب على المهارات');
     }
@@ -197,12 +255,10 @@ function getRecommendedPrograms(age, income) {
         programs.push('حلول الرعاية');
     }
     
-    // توصيات بناءً على الدخل
     if (income === 'low' || income === 'medium-low') {
         programs.push('الثقافة المالية');
     }
     
-    // إضافة برنامج افتراضي إذا لم تتطابق أي من الشروط
     if (programs.length === 0) {
         programs.push('التطوير المهني');
     }
@@ -210,19 +266,16 @@ function getRecommendedPrograms(age, income) {
     return programs;
 }
 
-
 // ===================================================================
-// 6. دوال تحديث لوحة التحكم (Dashboard Update Functions)
+// 7. دوال تحديث لوحة التحكم
 // ===================================================================
 
-// دالة رئيسية لتحديث جميع مكونات لوحة التحكم
 function updateDashboard() {
     updateKPIs();
     updateCharts();
     updateTable();
 }
 
-// تحديث بطاقات مؤشرات الأداء الرئيسية (KPIs)
 function updateKPIs() {
     const total = window.surveysData.length;
     document.getElementById('totalSurveys').textContent = total;
@@ -237,7 +290,6 @@ function updateKPIs() {
     }
 }
 
-// تحديث الرسوم البيانية
 function updateCharts() {
     updateProgramsChart();
     updateDemographicChart();
@@ -245,7 +297,6 @@ function updateCharts() {
     updateEducationChart();
 }
 
-// دالة لتحديث الرسم البياني الخاص بالبرامج
 function updateProgramsChart() {
     const ctx = document.getElementById('programsChart').getContext('2d');
     const programCounts = {};
@@ -282,7 +333,6 @@ function updateProgramsChart() {
     });
 }
 
-// دالة لتحديث الرسم البياني الخاص بالفئات العمرية
 function updateDemographicChart() {
     const ctx = document.getElementById('demographicChart').getContext('2d');
     const ageCounts = {};
@@ -308,7 +358,6 @@ function updateDemographicChart() {
     });
 }
 
-// دالة لتحديث الرسم البياني الخاص بالدخل
 function updateIncomeChart() {
     const ctx = document.getElementById('incomeChart').getContext('2d');
     const incomeCounts = {};
@@ -341,7 +390,6 @@ function updateIncomeChart() {
     });
 }
 
-// دالة لتحديث الرسم البياني الخاص بالمستوى التعليمي
 function updateEducationChart() {
     const ctx = document.getElementById('educationChart').getContext('2d');
     const eduCounts = {};
@@ -374,7 +422,6 @@ function updateEducationChart() {
     });
 }
 
-// دالة لتحديث جدول أحدث الاستبيانات
 function updateTable() {
     const tbody = document.getElementById('surveysTableBody');
     
@@ -396,12 +443,10 @@ function updateTable() {
     `).join('');
 }
 
-
 // ===================================================================
-// 7. دوال إضافية (Utility Functions)
+// 8. دوال إضافية
 // ===================================================================
 
-// دالة لتصدير البيانات إلى ملف CSV (متوافق مع Excel)
 function exportToExcel() {
     if (window.surveysData.length === 0) {
         alert('لا توجد بيانات للتصدير');
@@ -421,7 +466,6 @@ function exportToExcel() {
     link.click();
 }
 
-// رسائل تظهر في console المتصفح للمطورين
-console.log('Social Development Survey System Loaded');
-console.log('Default Login - Username: admin, Password: admin123');
-console.log('Backend API URL:', API_URL);
+console.log('✅ Social Development Survey System Loaded');
+console.log('👤 Default Login - Username: admin, Password: admin123');
+console.log('🔗 Backend API URL:', API_URL);
